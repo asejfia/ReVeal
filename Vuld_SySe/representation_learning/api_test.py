@@ -10,6 +10,7 @@ from baseline_svm import SVMLearningAPI
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
+    parser.add_argument('--original', default='N', choices=['Y', 'N'], help="whether to use the original train/test data")
     parser.add_argument('--dataset', default='chrome_debian/balanced',
                         choices=['chrome_debian/balanced', 'chrome_debian/imbalanced', 'chrome_debian', 'devign'])
     parser.add_argument('--features', default='ggnn', choices=['ggnn', 'wo_ggnn'])
@@ -22,6 +23,7 @@ if __name__ == '__main__':
     numpy.random.rand(1000)
     torch.manual_seed(1000)
     args = parser.parse_args()
+    original = True if args.original == "Y" else False
     dataset = args.dataset
     feature_name = args.features
     parts = ['train', 'valid', 'test']
@@ -57,23 +59,49 @@ if __name__ == '__main__':
     else:
         output_file_name += 'triplet-loss-layers-'+ str(args.num_layers) + '.tsv'
     output_file = open(output_file_name, 'w')
-    features = []
-    targets = []
-    for part in parts:
-        json_data_file = open(ds + part + '_GGNNinput_graph.json')
-        data = json.load(json_data_file)
-        json_data_file.close()
-        for d in data:
-            features.append(d['graph_feature'])
-            targets.append(d['target'])
-        del data
-    X = numpy.array(features)
-    Y = numpy.array(targets)
-    print('Dataset', X.shape, Y.shape, numpy.sum(Y), sep='\t', file=sys.stderr)
-    print('=' * 100, file=sys.stderr, flush=True)
+    if original:
+        features = []
+        targets = []
+        for part in parts:
+            json_data_file = open(ds + part + '_GGNNinput_graph.json')
+            data = json.load(json_data_file)
+            json_data_file.close()
+            for d in data:
+                features.append(d['graph_feature'])
+                targets.append(d['target'])
+            del data
+        X = numpy.array(features)
+        Y = numpy.array(targets)
+        print('Dataset', X.shape, Y.shape, numpy.sum(Y), sep='\t', file=sys.stderr)
+        print('=' * 100, file=sys.stderr, flush=True)
     for _ in range(30):
-        train_X, test_X, train_Y, test_Y = train_test_split(X, Y, test_size=0.2)
-        print(train_X.shape, train_Y.shape, test_X.shape, test_Y.shape, sep='\t', file=sys.stderr, flush=True)
+        if original:
+            train_X, test_X, train_Y, test_Y = train_test_split(X, Y, test_size=0.2)
+            print(train_X.shape, train_Y.shape, test_X.shape, test_Y.shape, sep='\t', file=sys.stderr, flush=True)
+        else:
+            train_X = []
+            train_Y = []
+            json_train_file = open("train_features.txt")
+            json_train_data = json.load(json_train_file)
+            json_train_file.close()
+            for d in json_train_data:
+                train_X.append(d['graph_feature'])
+                train_Y.append(d['target'])
+            del json_train_data
+            train_X = numpy.array(train_X)
+            train_Y = numpy.array(train_Y)
+
+            test_X = []
+            test_Y = []
+            json_test_file = open("test_features.txt")
+            json_test_data = json.load(json_test_file)
+            json_test_file.close()
+            for d in json_test_data:
+                test_X.append(d['graph_feature'])
+                test_Y.append(d['target'])
+            del json_train_data
+            test_X = numpy.array(test_X)
+            test_Y = numpy.array(test_Y)
         if args.baseline:
             model = SVMLearningAPI(True, args.baseline_balance, model_type=args.baseline_model)
         else:
