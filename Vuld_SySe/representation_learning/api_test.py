@@ -124,7 +124,7 @@ if __name__ == '__main__':
                 correct_label = test_Y[index]
                 # print(elem, batch_pred, correct_label, sep='\t', flush=True, file=study_output_file)
                 testing_results.append({
-                    'graph_feature': elem,
+                    'graph_feature': elem.tolist(),
                     'predicted': batch_pred,
                     'target': correct_label
                 })
