@@ -99,7 +99,7 @@ if __name__ == '__main__':
             for d in json_test_data:
                 test_X.append(d['graph_feature'])
                 test_Y.append(d['target'])
-            del json_train_data
+            del json_test_data
             test_X = numpy.array(test_X)
             test_Y = numpy.array(test_Y)
         if args.baseline:
