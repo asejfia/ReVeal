@@ -125,7 +125,7 @@ if __name__ == '__main__':
                 # print(elem, batch_pred, correct_label, sep='\t', flush=True, file=study_output_file)
                 testing_results.append({
                     'graph_feature': elem.tolist(),
-                    'predicted': int(batch_pred),
+                    'predicted': int(batch_pred[0]),
                     'target': int(correct_label)
                 })
             study_output_file = open(f"study_output/{index}.txt", 'w')
