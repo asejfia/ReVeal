@@ -74,7 +74,7 @@ if __name__ == '__main__':
         Y = numpy.array(targets)
         print('Dataset', X.shape, Y.shape, numpy.sum(Y), sep='\t', file=sys.stderr)
         print('=' * 100, file=sys.stderr, flush=True)
-    for index in range(1):
+    for i in range(1):
         if original:
             train_X, test_X, train_Y, test_Y = train_test_split(X, Y, test_size=0.2)
             print(train_X.shape, train_Y.shape, test_X.shape, test_Y.shape, sep='\t', file=sys.stderr, flush=True)
@@ -117,8 +117,8 @@ if __name__ == '__main__':
                 tf_features = numpy.zeros(shape=(1, len(elem)))
                 test_features = []
                 test_features.append(elem)
-                for index in range(len(elem)):
-                    tf_features[0, index] = elem[index]
+                for indexj in range(len(elem)):
+                    tf_features[0, indexj] = elem[indexj]
                 probs, _, _ = model.model(example_batch=torch.FloatTensor(tf_features))
                 batch_pred = numpy.argmax(probs.detach().cpu().numpy(), axis=-1).tolist()
                 correct_label = test_Y[index]
@@ -128,7 +128,7 @@ if __name__ == '__main__':
                     'predicted': int(batch_pred[0]),
                     'target': int(correct_label)
                 })
-            study_output_file = open(f"study_output/{index}.txt", 'w')
+            study_output_file = open(f"study_output/{i}.txt", 'w')
             json.dump(testing_results, study_output_file)
             study_output_file.close()
             model.model.train()
