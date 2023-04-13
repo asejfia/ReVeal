@@ -74,7 +74,7 @@ if __name__ == '__main__':
         Y = numpy.array(targets)
         print('Dataset', X.shape, Y.shape, numpy.sum(Y), sep='\t', file=sys.stderr)
         print('=' * 100, file=sys.stderr, flush=True)
-    for _ in range(30):
+    for index in range(1):
         if original:
             train_X, test_X, train_Y, test_Y = train_test_split(X, Y, test_size=0.2)
             print(train_X.shape, train_Y.shape, test_X.shape, test_Y.shape, sep='\t', file=sys.stderr, flush=True)
@@ -110,6 +110,28 @@ if __name__ == '__main__':
                 num_layers=args.num_layers
             )
         model.train(train_X, train_Y)
+        if not original:
+            model.model.eval()
+            testing_results = []
+            for index, elem in enumerate(test_X):
+                tf_features = numpy.zeros(shape=(1, len(elem)))
+                test_features = []
+                test_features.append(elem)
+                for index in range(len(elem)):
+                    tf_features[0, index] = elem[index]
+                probs, _, _ = model.model(example_batch=torch.FloatTensor(tf_features))
+                batch_pred = numpy.argmax(probs.detach().cpu().numpy(), axis=-1).tolist()
+                correct_label = test_Y[index]
+                # print(elem, batch_pred, correct_label, sep='\t', flush=True, file=study_output_file)
+                testing_results.append({
+                    'graph_feature': elem,
+                    'predicted': batch_pred,
+                    'target': correct_label
+                })
+            study_output_file = open(f"study_output/{index}.txt", 'w')
+            json.dump(testing_results, study_output_file)
+            study_output_file.close()
+            model.model.train()
         results = model.evaluate(test_X, test_Y)
         print(results['accuracy'], results['precision'], results['recall'], results['f1'], sep='\t', flush=True,
               file=output_file)
