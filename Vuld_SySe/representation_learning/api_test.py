@@ -74,14 +74,14 @@ if __name__ == '__main__':
         Y = numpy.array(targets)
         print('Dataset', X.shape, Y.shape, numpy.sum(Y), sep='\t', file=sys.stderr)
         print('=' * 100, file=sys.stderr, flush=True)
-    for i in range(1):
+    for i in range(30):
         if original:
             train_X, test_X, train_Y, test_Y = train_test_split(X, Y, test_size=0.2)
             print(train_X.shape, train_Y.shape, test_X.shape, test_Y.shape, sep='\t', file=sys.stderr, flush=True)
         else:
             train_X = []
             train_Y = []
-            json_train_file = open("train_features.txt")
+            json_train_file = open(f"train_test_files/{i}/train_features.txt")
             json_train_data = json.load(json_train_file)
             json_train_file.close()
             for d in json_train_data:
@@ -93,7 +93,7 @@ if __name__ == '__main__':
 
             test_X = []
             test_Y = []
-            json_test_file = open("test_features.txt")
+            json_test_file = open(f"train_test_files/{i}/test_features.txt")
             json_test_data = json.load(json_test_file)
             json_test_file.close()
             for d in json_test_data:
