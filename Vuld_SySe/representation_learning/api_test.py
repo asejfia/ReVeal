@@ -24,6 +24,7 @@ if __name__ == '__main__':
     torch.manual_seed(1000)
     args = parser.parse_args()
     original = True if args.original == "Y" else False
+    individual_results = True
     dataset = args.dataset
     feature_name = args.features
     parts = ['train', 'valid', 'test']
@@ -110,7 +111,7 @@ if __name__ == '__main__':
                 num_layers=args.num_layers
             )
         model.train(train_X, train_Y)
-        if not original:
+        if individual_results:
             model.model.eval()
             testing_results = []
             for index, elem in enumerate(test_X):
