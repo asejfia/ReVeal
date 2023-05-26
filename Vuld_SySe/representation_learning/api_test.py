@@ -77,9 +77,11 @@ if __name__ == '__main__':
         print('=' * 100, file=sys.stderr, flush=True)
     for i in range(30):
         if original:
+            print("Getting original results")
             train_X, test_X, train_Y, test_Y = train_test_split(X, Y, test_size=0.2)
             print(train_X.shape, train_Y.shape, test_X.shape, test_Y.shape, sep='\t', file=sys.stderr, flush=True)
         else:
+            print("Reading data from file")
             train_X = []
             train_Y = []
             json_train_file = open(f"train_test_files/{i}/train_features.txt")
