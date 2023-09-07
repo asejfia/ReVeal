@@ -131,7 +131,10 @@ if __name__ == '__main__':
                     'predicted': int(batch_pred[0]),
                     'target': int(correct_label)
                 })
-            study_output_file = open(f"study_output_original/{i}.txt", 'w')
+            if original:
+                study_output_file = open(f"study_output_original/{i}.txt", 'w')
+            else:
+                study_output_file = open(f"study_output/{i}.txt", 'w')
             json.dump(testing_results, study_output_file)
             study_output_file.close()
             model.model.train()
